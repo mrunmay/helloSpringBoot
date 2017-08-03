@@ -1,14 +1,19 @@
 package za.co.reverside.api;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import za.co.reverside.model.Employee;
 import za.co.reverside.repository.IEmployeeRepository;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collection;
+import java.util.Properties;
 
 @RestController
 @RequestMapping(value = "api/")
@@ -16,6 +21,14 @@ public class Services
 {
   @Autowired
   IEmployeeRepository employeeRepository;
+
+  @RequestMapping(value = "/add", method = RequestMethod.POST)
+  public void addNewEmployee(@RequestBody Employee employee)
+  {
+    if (employee != null) {
+      employeeRepository.save(employee);
+    }
+  }
 
   @RequestMapping(value = "employee/{id}", method = RequestMethod.GET, produces = "application/json")
   public Employee getEmployee(@PathVariable("id") Long id)
@@ -56,5 +69,14 @@ public class Services
     }
     employeeRepository.delete(id);
   }
+
+    @RequestMapping(path = "/build", method = RequestMethod.GET, produces = "application/json")
+    public Properties build() throws IOException
+    {
+        InputStream in = new ClassPathResource("git.properties").getInputStream();
+        Properties properties = new Properties();
+        properties.load(in);
+        return properties;
+    }
 
 }
