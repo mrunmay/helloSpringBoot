@@ -1,11 +1,9 @@
-# helloSpringBoot
-Command to Run helloSpringBoot Application:
-    mvn clean package spring-boot:run
+# Spring Boot Application for Beginner
+Command to Run helloSpringBoot Application:<br><i>mvn clean package spring-boot:run</i>
 
-Command to run the helloSpringBoot executable JAR:
-    java -jar helloSpringBoot.jar
+Command to run the helloSpringBoot executable JAR:<br><i>java -jar helloSpringBoot.jar</i>
 
-Service Sandbox:
+<b><u>Service Sandbox</u></b>:
 1. methods=[POST] [/api/employee/add]
 2. methods=[GET], [/api/employee/{id}], produces=[application/json]
 3. methods=[GET], [/api/employee/fname/{firstName}], produces=[application/json]
