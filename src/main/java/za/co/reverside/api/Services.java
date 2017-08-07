@@ -19,13 +19,13 @@ import java.util.List;
 import java.util.Properties;
 
 @RestController
-@RequestMapping(value = "api/")
+@RequestMapping(value = "api")
 public class Services
 {
   @Autowired
   IEmployeeRepository employeeRepository;
 
-  @RequestMapping(value = "/add", method = RequestMethod.POST)
+  @RequestMapping(value = "/employee/add", method = RequestMethod.POST)
   @ResponseStatus( HttpStatus.CREATED )
   public void addNewEmployee(@RequestBody Employee employee)
   {
@@ -34,61 +34,86 @@ public class Services
     }
   }
 
-  @RequestMapping(value = "employee/{id}", method = RequestMethod.GET, produces = "application/json")
+  @RequestMapping(value = "/employee/{id}", method = RequestMethod.GET, produces = "application/json")
   @ResponseStatus( HttpStatus.OK )
   public Employee getEmployee(@PathVariable("id") Long id)
   {
     Employee employee = employeeRepository.findOne(id);
     if (employee == null)
     {
-      throw new RuntimeException("User not found.");
+      throw new RuntimeException("Employee not found");
     }
     return employee;
   }
 
-  @RequestMapping(value = "employees", method = RequestMethod.GET, produces = "application/json")
+  @RequestMapping(value = "/employees", method = RequestMethod.GET, produces = "application/json")
   @ResponseStatus( HttpStatus.OK )
   public Collection<Employee> getEmployees()
   {
     return employeeRepository.findAll();
   }
 
-  @RequestMapping(value = "employee/fname/{firstName}", method = RequestMethod.GET, produces = "application/json")
+  @RequestMapping(value = "/employee/fname/{firstName}", method = RequestMethod.GET, produces = "application/json")
   @ResponseStatus( HttpStatus.OK )
   public Employee getEmployeeByFirstName(@PathVariable("firstName") String firstName)
   {
     return employeeRepository.getEmployeeByFirstName(firstName);
   }
 
-  @RequestMapping(value = "employee/lname/{lastName}", method = RequestMethod.GET, produces = "application/json")
+  @RequestMapping(value = "/employee/lname/{lastName}", method = RequestMethod.GET, produces = "application/json")
   @ResponseStatus( HttpStatus.OK )
   public Collection<Employee> getEmployeeByLastName(@PathVariable("lastName") String LastName)
   {
     return employeeRepository.getEmployeeByLastName(LastName);
   }
 
-  @RequestMapping(value = "employee/delete/{id}", method = RequestMethod.DELETE, produces = "application/json")
+  @RequestMapping(value = "/employee/delete/{id}", method = RequestMethod.DELETE, produces = "application/json")
   @ResponseStatus( HttpStatus.OK )
   public void deleteEmployeeById(@PathVariable("id") Long id)
   {
     Employee employee = employeeRepository.findOne(id);
     if (employee == null)
     {
-      throw new RuntimeException("User doesn't Exist.");
+      throw new RuntimeException("Employee doesn't Exist");
     }
     employeeRepository.delete(id);
   }
 
-  @RequestMapping(value = "employee/delete/all", method = RequestMethod.DELETE, produces = "application/json")
+  @RequestMapping(value = "/employees/delete", method = RequestMethod.DELETE, produces = "application/json")
   @ResponseStatus( HttpStatus.OK)
   public void deleteEmployees()
   {
     List<Employee> employees = employeeRepository.findAll();
     if (employees == null || employees.isEmpty())
     {
-      throw new RuntimeException("No User Exist.");
+      throw new RuntimeException("No Employee Exist");
     }
     employeeRepository.deleteAll();
+  }
+
+  @RequestMapping(value = "/employee/update/{id}", method = RequestMethod.PUT)
+  @ResponseStatus( HttpStatus.OK )
+  public Employee updateEmployee(@PathVariable("id") Long id, @RequestBody Employee employee)
+  {
+    Employee emp = employeeRepository.findOne(id);
+
+    if (emp != null)
+    {
+      if (emp.getFirstName().equals(employee.getFirstName())
+              && emp.getLastName().equals(employee.getLastName()))
+      {
+        throw new RuntimeException("There are no changes to update the existing Employee");
+      }
+      emp.setId(emp.getId());
+      emp.setFirstName(employee.getFirstName());
+      emp.setLastName(employee.getLastName());
+
+      return employeeRepository.save(emp);
+    }
+    else
+    {
+      throw new RuntimeException("Employee not found to update");
+    }
   }
 
   @RequestMapping(path = "/build", method = RequestMethod.GET, produces = "application/json")
